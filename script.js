@@ -1,7 +1,11 @@
-let entryCount = 0;
+// Set your backend URL once
+const backendUrl = 'https://admin-panel-backend-07dc.onrender.com';
 
-// Set today's date as default
+// Set today's date as default in the form
 document.getElementById('date').value = new Date().toISOString().split('T')[0];
+
+// Call the function to load data when the page content is fully loaded
+document.addEventListener('DOMContentLoaded', loadInitialData);
 
 function showAlert(message, type) {
     const alertContainer = document.getElementById('alertContainer');
@@ -64,6 +68,51 @@ function sortTable() {
     rows.forEach(row => tbody.appendChild(row));
 }
 
+function loadInitialData() {
+    fetch(`${backendUrl}/entries`)
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to fetch entries');
+            return response.json();
+        })
+        .then(data => {
+            const tbody = document.getElementById('tableBody');
+            if (data.length === 0) {
+                showEmptyState();
+                return;
+            }
+
+            const emptyState = tbody.querySelector('.empty-state');
+            if (emptyState) emptyState.remove();
+
+            data.forEach(entry => {
+                const newRow = document.createElement('tr');
+                newRow.dataset.id = entry.id;
+                
+                const formattedDate = new Date(entry.date).toISOString().split('T')[0];
+
+                newRow.innerHTML = `
+                    <td><input type="text" class="table-input" value="${entry.reg_no}" disabled></td>
+                    <td><input type="text" class="table-input" value="${entry.name}" disabled></td>
+                    <td><input type="text" class="table-input" value="${entry.company}" disabled></td>
+                    <td><input type="time" class="table-input" value="${entry.duration}" disabled></td>
+                    <td><input type="date" class="table-input" value="${formattedDate}" disabled></td>
+                    <td><input type="text" class="table-input" value="${entry.room}" disabled></td>
+                    <td>
+                        <button class="edit-btn" onclick="toggleEdit(this)">Edit</button>
+                        <button class="delete-btn" onclick="deleteRow(this)">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(newRow);
+            });
+            sortTable();
+            updateEntryCount();
+        })
+        .catch(err => {
+            console.error('Error loading initial data:', err);
+            showAlert('Could not load existing entries from the database.', 'error');
+        });
+}
+
 function addRow() {
     const regNumber = document.getElementById('regNumber').value.trim();
     const name = document.getElementById('name').value.trim();
@@ -79,7 +128,7 @@ function addRow() {
 
     const newEntry = { regNumber, name, companyName, duration, date, roomNumber };
 
-    fetch('YOUR_BACKEND_URL/add-entry', {
+    fetch(`${backendUrl}/add-entry`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newEntry)
@@ -92,6 +141,11 @@ function addRow() {
         if (data.id) {
             showAlert("Entry added successfully!", "success");
             const tbody = document.getElementById('tableBody');
+            
+            // If it's the first entry, clear the empty state
+            const emptyState = tbody.querySelector('.empty-state');
+            if (emptyState) emptyState.remove();
+            
             const newRow = document.createElement('tr');
             newRow.dataset.id = data.id;
             
@@ -138,7 +192,7 @@ function toggleEdit(button) {
         inputs.forEach(input => input.disabled = false);
         button.textContent = 'Save';
         button.classList.add('save');
-        inputs[0].focus(); // Focus on the first input
+        inputs[0].focus();
     } else {
         const id = row.dataset.id;
         const updatedEntry = {
@@ -155,7 +209,7 @@ function toggleEdit(button) {
             return;
         }
 
-        fetch(`YOUR_BACKEND_URL/update-entry/${id}`, {
+        fetch(`${backendUrl}/update-entry/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(updatedEntry)
@@ -183,7 +237,7 @@ function deleteRow(button) {
         const row = button.closest('tr');
         const id = row.dataset.id;
         
-        fetch(`YOUR_BACKEND_URL/delete-entry/${id}`, {
+        fetch(`${backendUrl}/delete-entry/${id}`, {
             method: 'DELETE'
         })
         .then(response => {
@@ -204,7 +258,6 @@ function deleteRow(button) {
         });
     }
 }
-// Add this new function to your script.js file
 
 function filterTable() {
     const filter = document.getElementById('searchInput').value.toUpperCase();
@@ -214,12 +267,10 @@ function filterTable() {
     let visibleRowCount = 0;
 
     for (let i = 0; i < rows.length; i++) {
-        // Skip the 'empty-state' row
         if (rows[i].classList.contains('empty-state')) continue;
 
         const cells = rows[i].getElementsByTagName('td');
         let match = false;
-        // Loop through all cells except the last one (actions buttons)
         for (let j = 0; j < cells.length - 1; j++) {
             const input = cells[j].getElementsByTagName('input')[0];
             if (input && input.value.toUpperCase().indexOf(filter) > -1) {
@@ -236,12 +287,9 @@ function filterTable() {
         }
     }
 
-    // Show or hide the "no results" message
-    if (visibleRowCount === 0 && !tableBody.querySelector('.empty-state')) {
+    if (visibleRowCount === 0 && rows.length > 1) { // check rows.length > 1 to avoid showing on initial empty state
         noResults.style.display = "block";
     } else {
         noResults.style.display = "none";
     }
 }
-
-// Ensure the rest of your script.js remains the same.
