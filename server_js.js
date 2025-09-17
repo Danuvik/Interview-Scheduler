@@ -12,8 +12,10 @@ const db = mysql.createConnection({
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
+    authPlugins: {
+      mysql_clear_password: () => () => Buffer.from(process.env.DB_PASSWORD + '\0')
+    }
 });
-
 db.connect((err) => {
     if (err) throw err;
     console.log('Connected to MySQL');
