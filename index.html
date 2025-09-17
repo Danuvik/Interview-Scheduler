@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Admin Panel</h1>
+            <p>Manage entries with ease</p>
+        </div>
+
+        <div class="input-section">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="regNumber">Registration Number</label>
+                    <input type="text" id="regNumber" placeholder="Enter registration number...">
+                </div>
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" placeholder="Enter name...">
+                </div>
+                <div class="form-group">
+                    <label for="companyName">Company Name</label>
+                    <input type="text" id="companyName" placeholder="Enter company name...">
+                </div>
+                <div class="form-group">
+                    <label for="duration">Duration</label>
+                    <input type="time" id="duration">
+                </div>
+                <div class="form-group">
+                    <label for="date">Date</label>
+                    <input type="date" id="date">
+                </div>
+                <div class="form-group">
+                    <label for="roomNumber">Room Number</label>
+                    <input type="text" id="roomNumber" placeholder="Enter room number...">
+                </div>
+            </div>
+            <button class="add-button" onclick="addRow()">Add Entry</button>
+            <div id="alertContainer"></div>
+        </div>
+
+        <div class="table-section">
+            <div class="table-header">
+                <h2 class="table-title">Entries</h2>
+                <div class="search-container">
+                    <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Search entries...">
+                </div>
+                <span class="entry-count" id="entryCount">0 entries</span>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Reg Number</th>
+                            <th>Name</th>
+                            <th>Company</th>
+                            <th>Duration</th>
+                            <th>Date</th>
+                            <th>Room</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr class="empty-state">
+                            <td colspan="7">
+                                <h3>No entries yet</h3>
+                                <p>Add your first entry above to get started</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+             <div class="no-results" id="noResults" style="display:none;">
+                <h3>No results found</h3>
+                <p>Try a different search term.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
