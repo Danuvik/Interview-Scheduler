@@ -79,7 +79,7 @@ function addRow() {
 
     const newEntry = { regNumber, name, companyName, duration, date, roomNumber };
 
-    fetch('http://localhost:3000/add-entry', {
+    fetch('YOUR_BACKEND_URL/add-entry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newEntry)
@@ -155,7 +155,7 @@ function toggleEdit(button) {
             return;
         }
 
-        fetch(`http://localhost:3000/update-entry/${id}`, {
+        fetch(`YOUR_BACKEND_URL/update-entry/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(updatedEntry)
@@ -183,7 +183,7 @@ function deleteRow(button) {
         const row = button.closest('tr');
         const id = row.dataset.id;
         
-        fetch(`http://localhost:3000/delete-entry/${id}`, {
+        fetch(`YOUR_BACKEND_URL/delete-entry/${id}`, {
             method: 'DELETE'
         })
         .then(response => {
