@@ -7,7 +7,8 @@ const app = express();
 
 // Set up CORS to allow your frontend to connect
 const corsOptions = {
-  origin: 'https://admin-panel-frontend.onrender.com', // Replace if your frontend URL is different
+//   origin: 'https://admin-panel-frontend.onrender.com', // Replace if your frontend URL is different
+origin: '*',
   optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
